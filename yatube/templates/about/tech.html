@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Технологии{% endblock %}
+{% block content %}
+{% comment %} Колонки с отступом сверху и снизу {% endcomment %}
+<div class="row">
+  <h1>Мои hard skills</h1>
+  {% comment %}
+    Боковой блок со списком технологий 
+    Займет всю ширину блока на мобильном
+    и 25% при размерах экрана ≥768px
+  {% endcomment %}
+  <aside class="col-12 col-md-3">
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">Python</li>
+      <li class="list-group-item">Php</li>
+      <li class="list-group-item">JavaScript</li>
+      <li class="list-group-item">Django</li>
+      <li class="list-group-item">1C-Bitrix</li>
+      <li class="list-group-item">Git</li>
+    </ul>
+  </aside>
+
+  {% comment %}
+    Статья  
+    Займет всю ширину блока на мобильном
+    и 75% при размерах экрана ≥768px
+  {% endcomment %}
+  <article class="col-12 col-md-9">
+    <p>Рад всех видеть на этой странице &#128515;</p>
+
+      <h2>Python и Django</h2>
+      <p>Осваиваю язык на курсах от Яндекс практикума. До этого прочел 2 тома Марка Лутца и byte of python. Суммарно на обучение ушло 1.5 года. Поработал джуном 3 месяца в компании на реальном проекте.</p>
+
+      <h2>Php</h2>
+      <p>С этим язык очень давно работаю, около 10 лет. В основном, как вэб разработчик. Успел насоздавать много сайтов. Сейчас в основном занимаюсь сложными, обьемными доработками.</p>
+
+      <h2>JavaScript</h2>
+      <p>Хорошо знаю нативную часть языка, хорошо ориентирую в коде.</p>
+
+      <h2>1C-Bitrix</h2>
+      <p>Тут ситуация следующая - любой каприз за ваши деньги &#128513;</p>
+
+      <h2>Git</h2>
+      <p>За плечами много разных курсов, подготовки от компаний, где работал. В общем опыт есть, если возникают проблемы, знаю как нагуглить решение &#128517;</p>
+  </article>
+</div>
+{% endblock %} 
