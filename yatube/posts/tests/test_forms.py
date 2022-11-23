@@ -50,7 +50,7 @@ class FormTest(TestCase):
         }
 
         before_post_count = Post.objects.count()
-        
+
         FormTest.guest_client.post(
             reverse('posts:post_create'),
             data=form_field,
