@@ -14,6 +14,7 @@
         </div>
         <div class="card-body">
           <form method="post" 
+            enctype="multipart/form-data"
             {% if is_edit %}      
               action="{% url 'posts:post_edit' post_id %}"
             {% else %}   

@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.test import TestCase, Client
 from http import HTTPStatus
 
@@ -28,6 +29,10 @@ class StaticURLTests(TestCase):
             title='Тест группа',
             slug='test_group'
         )
+
+    def setUp(self):
+        super().setUp()
+        cache.clear()
 
     def test_pages_available_for_guest_users(self):
         pages = ['/', '/group/test_group/', '/profile/test/', '/posts/1/']

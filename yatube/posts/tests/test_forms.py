@@ -4,7 +4,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 
 
-from posts.models import Post
+from posts.models import Post, Comment
 
 User = get_user_model()
 
@@ -86,3 +86,28 @@ class FormTest(TestCase):
         response = FormTest.authorized_client_nohave_post.get('/posts/1/edit/')
 
         self.assertEqual(response.status_code, HTTPStatus.FOUND.value)
+
+    def test_add_comment_guest_client(self):
+
+        response = FormTest.authorized_client_nohave_post.get(f'/posts/{FormTest.post.id}/comment/')
+
+        self.assertEqual(response.status_code, HTTPStatus.FOUND.value)
+
+    def test_availiable_comment(self):
+        form_field = {
+            'text': 'Тестовый комментарий',
+            'author': FormTest.authorized_client,
+            'post': FormTest.post
+        }
+
+        FormTest.authorized_client.post(
+            reverse('posts:add_comment', kwargs={'post_id': FormTest.post.id}),
+            data=form_field,
+            follow=True
+        )
+
+        after_comment_count = Comment.objects.filter(
+            post=FormTest.post
+        ).count()
+
+        self.assertEqual(after_comment_count, 1)
