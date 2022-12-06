@@ -10,7 +10,7 @@ from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 
-from posts.models import Post, Group
+from posts.models import Post, Group, Follow
 from posts.forms import PostForm
 
 
@@ -275,4 +275,104 @@ class PostPaginatorTest(TestCase):
 
         self.assertTrue(
             response.context['page_obj'].has_other_pages
+        )
+
+
+class PostFollowerTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = User.objects.create_user(username='test_user')
+        cls.authorized_user = Client()
+        cls.authorized_user.force_login(cls.user)
+
+        cls.user_author = User.objects.create_user(username='test_author')
+        cls.author = Client()
+        cls.author.force_login(cls.user_author)
+
+        cls.group = Group.objects.create(
+            title='Тестовая группа 3',
+            slug='test_group_3',
+            description='Тестовое описание 3',
+        )
+
+        cls.post = Post.objects.create(
+            text='Тестовый заголовок 3',
+            author=cls.user_author,
+            group=cls.group,
+        )
+
+        cls.subscribe = Follow.objects.create(
+            user=PostFollowerTest.user,
+            author=PostFollowerTest.user_author
+        )
+
+    def test_user_can_follow(self):
+        PostFollowerTest.authorized_user.get(
+            reverse(
+                'posts:profile_follow',
+                kwargs={'username': PostFollowerTest.user_author.username}
+            )
+        )
+
+        follow_count = Follow.objects.all().count()
+
+        self.assertEqual(follow_count, 2)
+
+    def test_user_can_unfollow(self):
+        Follow.objects.create(
+            user=PostFollowerTest.user,
+            author=PostFollowerTest.user_author
+        )
+
+        PostFollowerTest.authorized_user.get(
+            reverse(
+                'posts:profile_unfollow',
+                kwargs={'username': PostFollowerTest.user_author.username}
+            )
+        )
+
+        after_follower_count = Follow.objects.all().count()
+
+        self.assertEqual(after_follower_count, 0)
+
+    def test_user_have_or_nohave_new_post(self):
+        user = User.objects.create_user(username='test_user_2')
+        other_authorized_user = Client()
+        other_authorized_user.force_login(user)
+
+        before_response = PostFollowerTest.authorized_user.get(
+            reverse('posts:follow_index')
+        )
+        before_post_count = len(before_response.context['page_obj'])
+
+        before_other_user_response = other_authorized_user.get(
+            reverse('posts:follow_index')
+        )
+        before_other_user_post_count = len(
+            before_other_user_response.context['page_obj']
+        )
+
+        Post.objects.create(
+            text='Тестовый заголовок 4',
+            author=PostFollowerTest.user_author,
+            group=PostFollowerTest.group,
+        )
+
+        after_response = PostFollowerTest.authorized_user.get(
+            reverse('posts:follow_index')
+        )
+        after_post_count = len(after_response.context['page_obj'])
+
+        after_other_user_response = other_authorized_user.get(
+            reverse('posts:follow_index')
+        )
+        after_other_user_post_count = len(
+            after_other_user_response.context['page_obj']
+        )
+
+        self.assertEqual(after_post_count, before_post_count + 1)
+        self.assertEqual(
+            before_other_user_post_count,
+            after_other_user_post_count
         )

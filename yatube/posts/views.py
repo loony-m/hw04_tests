@@ -55,14 +55,19 @@ def profile(request, username):
     user = get_object_or_404(User, username=username)
     posts = Post.objects.filter(author=user.id).all()
     page_obj = get_pagination(request, posts, POST_COUNT)
-    follower = Follow.objects.filter(user=request.user, author=user)
+    following = False
+
+    if request.user.is_authenticated:
+        follower = Follow.objects.filter(user=request.user, author=user)
+        if follower.count() > 0:
+            following = True
 
     context = {
         'page_obj': page_obj['elements'],
         'posts_count': page_obj['elements_count'],
         'title': f'Профайл пользователя {user.username}',
         'author': user,
-        'following': True if follower.count() > 0 else False,
+        'following': following,
     }
 
     return render(request, 'posts/profile.html', context)
