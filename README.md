@@ -28,7 +28,12 @@ python3 -m venv venv
 pip install -r requirements.txt
 ```
 
-4. Запустим проект
+4. Выполним миграции
+```
+python manage.py migrate
+```
+
+5. Запустим проект
 ```
 python manage.py runserver
 ```
